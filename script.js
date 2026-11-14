@@ -1,30 +1,30 @@
 /* ==========================================================
-   LIBRARY MANAGEMENT SYSTEM - script.js
-   Sections:
-     1. Backend data functions (replace these with API calls)
-     2. Constants and helpers
-     3. Navigation
-     4. Dashboard
-     5. Book inventory
-     6. Monthly statistics entry
-     7. Reports and export
-     8. Start-up
+   library management system - script.js
+   sections:
+     1. backend data functions (replace these with api calls)
+     2. constants and helpers
+     3. navigation
+     4. dashboard
+     5. book inventory
+     6. monthly statistics entry
+     7. reports and export
+     8. start-up
    ========================================================== */
 
 
 /* ==========================================================
-   1. BACKEND DATA FUNCTIONS
-   Everything that reads or writes data lives here.
-   Right now it uses localStorage. Replace the marked lines
+   1. backend data functions
+   everything that reads or writes data lives here.
+   right now it uses localstorage. replace the marked lines
    with fetch() calls when the backend is ready.
    ========================================================== */
 
 var BOOKS_KEY = 'library_books';
 var MONTHLY_KEY = 'library_monthly';
-// TODO BACKEND: base URL of the Flask server
+// TODO BACKEND: base url of the flask server
 var API_URL = 'http://127.0.0.1:5000/api';
 
-// Small helpers that read/write localStorage (remove once the backend is used)
+// small helpers that read/write localstorage (remove once the backend is used)
 function readList(key) {
     var text = localStorage.getItem(key);
     if (text === null) {
@@ -37,7 +37,7 @@ function writeList(key, list) {
     localStorage.setItem(key, JSON.stringify(list));
 }
 
-// Returns { books: [...], monthly: [...] }
+// returns { books: [...], monthly: [...] }
 function fetchDashboardData() {
     // TODO BACKEND: replace the two lines below with:
     //   const response = await fetch(API_URL + '/dashboard');
@@ -48,7 +48,7 @@ function fetchDashboardData() {
     return { books: books, monthly: monthly };
 }
 
-// Adds a new book, or updates it if bookData.id already exists
+// adds a new book, or updates it if the book already has an id
 function saveBookToBackend(bookData) {
     var books = readList(BOOKS_KEY);
     bookData.updatedAt = Date.now();
@@ -74,7 +74,7 @@ function saveBookToBackend(bookData) {
     writeList(BOOKS_KEY, books);
 }
 
-// Adds a new monthly record, or updates it if statsData.id already exists
+// adds a new monthly record, or updates it if the record already has an id
 function saveMonthlyRecordToBackend(statsData) {
     var records = readList(MONTHLY_KEY);
     statsData.updatedAt = Date.now();
@@ -100,7 +100,7 @@ function saveMonthlyRecordToBackend(statsData) {
     writeList(MONTHLY_KEY, records);
 }
 
-// Deletes a book or a monthly record. The id starts with "book-" or "monthly-"
+// deletes a book or a monthly record. the id starts with "book-" or "monthly-"
 function deleteRecordFromBackend(id) {
     // TODO BACKEND: replace everything below with:
     //   await fetch(API_URL + '/records/' + id, { method: 'DELETE' });
@@ -120,7 +120,7 @@ function deleteRecordFromBackend(id) {
 
 
 /* ==========================================================
-   2. CONSTANTS AND HELPERS
+   2. constants and helpers
    ========================================================== */
 
 var MONTH_NAMES = ['January', 'February', 'March', 'April', 'May', 'June',
@@ -134,7 +134,7 @@ function $(id) {
     return document.getElementById(id);
 }
 
-// Fills a <select> with year options
+// fills a <select> with year options
 function fillYearSelect(selectId, selectedYear) {
     var select = $(selectId);
     select.innerHTML = '';
@@ -147,7 +147,7 @@ function fillYearSelect(selectId, selectedYear) {
     select.value = selectedYear;
 }
 
-// Fills a <select> with month options. includeAll adds "All Months" (value 0)
+// fills a <select> with month options. includeAll adds "all months" (value 0)
 function fillMonthSelect(selectId, includeAll) {
     var select = $(selectId);
     select.innerHTML = '';
@@ -165,7 +165,7 @@ function fillMonthSelect(selectId, includeAll) {
     }
 }
 
-// Stops user text from being treated as HTML
+// stops user text from being treated as html
 function escapeHtml(text) {
     return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;')
         .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -177,7 +177,7 @@ function formatNumber(number) {
 
 
 /* ==========================================================
-   3. NAVIGATION
+   3. navigation
    ========================================================== */
 
 function showView(viewId) {
@@ -218,7 +218,7 @@ function setupNavigation() {
     });
 }
 
-// Re-draws everything. Called after any change so numbers stay up to date.
+// re-draws everything. called after any change so numbers stay up to date.
 function refreshAll() {
     renderDashboard();
     renderInventoryTable();
@@ -228,7 +228,7 @@ function refreshAll() {
 
 
 /* ==========================================================
-   4. DASHBOARD
+   4. dashboard
    ========================================================== */
 
 function renderDashboard() {
@@ -236,7 +236,7 @@ function renderDashboard() {
     var year = Number($('dash-year').value);
     var month = Number($('dash-month').value);
 
-    // Add up the monthly records for the chosen year (and month if chosen)
+    // add up the monthly records for the chosen year (and month if chosen)
     var totals = { visitors: 0, borrowed: 0, inquiries: 0, computers: 0, activities: 0 };
     for (var i = 0; i < data.monthly.length; i++) {
         var record = data.monthly[i];
@@ -249,7 +249,7 @@ function renderDashboard() {
         }
     }
 
-    // Total books = sum of all copies in the inventory
+    // total books = sum of all copies in the inventory
     var totalBooks = 0;
     for (var b = 0; b < data.books.length; b++) {
         totalBooks += Number(data.books[b].copies) || 0;
@@ -262,7 +262,7 @@ function renderDashboard() {
     $('stat-computers').textContent = formatNumber(totals.computers);
     $('stat-activities').textContent = formatNumber(totals.activities);
 
-    // Charts always show Jan-Dec of the selected year
+    // charts always show jan-dec of the selected year
     var visitorsByMonth = [];
     var borrowedByMonth = [];
     for (var m = 0; m < 12; m++) {
@@ -301,7 +301,7 @@ function drawBarChart(containerId, values) {
     $(containerId).innerHTML = html;
 }
 
-// Shows the 5 newest added/edited items (books and monthly records mixed)
+// shows the 5 newest added/edited items (books and monthly records mixed)
 function renderRecentList(data) {
     var items = [];
     for (var i = 0; i < data.books.length; i++) {
@@ -359,7 +359,7 @@ function setupDashboard() {
     $('dash-year').addEventListener('change', renderDashboard);
     $('dash-month').addEventListener('change', renderDashboard);
 
-    // Edit buttons in the recent list
+    // edit buttons in the recent list
     $('recent-list').addEventListener('click', function (event) {
         var id = event.target.getAttribute('data-edit-id');
         if (id) {
@@ -368,7 +368,7 @@ function setupDashboard() {
     });
 }
 
-// Opens the correct form for a book or monthly record
+// opens the correct form for a book or monthly record
 function editRecord(id) {
     if (id.indexOf('book-') === 0) {
         startEditBook(id);
@@ -379,10 +379,10 @@ function editRecord(id) {
 
 
 /* ==========================================================
-   5. BOOK INVENTORY
+   5. book inventory
    ========================================================== */
 
-// Field name -> input id (used for saving, editing and clearing)
+// field name -> input id (used for saving, editing and clearing)
 var BOOK_FIELDS = {
     progression: 'book-progression',
     title: 'book-title',
@@ -408,7 +408,7 @@ function findBook(id) {
     return null;
 }
 
-// "Fill Empty Optional Fields with N/A" button
+// "fill empty optional fields with n/a" button
 function fillEmptyOptionalFields() {
     for (var i = 0; i < OPTIONAL_FIELD_IDS.length; i++) {
         var input = $(OPTIONAL_FIELD_IDS[i]);
@@ -534,7 +534,7 @@ function setupInventory() {
 
 
 /* ==========================================================
-   6. MONTHLY STATISTICS ENTRY
+   6. monthly statistics entry
    ========================================================== */
 
 function findMonthly(id) {
@@ -574,7 +574,7 @@ function handleMonthlySubmit(event) {
     var month = Number($('monthly-month').value);
     var id = $('monthly-id').value;
 
-    // Only one record is allowed for each year + month
+    // only one record is allowed for each year + month
     var records = fetchDashboardData().monthly;
     for (var i = 0; i < records.length; i++) {
         if (records[i].year === year && records[i].month === month && records[i].id !== id) {
@@ -669,17 +669,17 @@ function setupMonthlyEntry() {
 
 
 /* ==========================================================
-   7. REPORTS AND EXPORT
+   7. reports and export
    ========================================================== */
 
-// Table headings for each report type
+// table headings for each report type
 var MONTHLY_HEADINGS = ['Year', 'Month', 'Total Library Visitors', 'Books Borrowed / Circulation',
     'Reference Inquiries', 'Internet / Computer Users', 'Library Activities Conducted'];
 var INVENTORY_HEADINGS = ['Progression No.', 'Title', 'Author / Editor', 'Date of Publication',
     'Call Number', 'Edition', 'Volume', 'Issue No.', 'ISBN / ISSN', 'No. of Copies',
     'Location', 'Remarks'];
 
-// Holds what is currently shown, so the CSV export matches the screen
+// holds what is currently shown, so the csv export matches the screen
 var currentReport = { headings: [], rows: [] };
 
 function buildMonthlyReportRows(data, year, month, keyword) {
@@ -697,7 +697,7 @@ function buildMonthlyReportRows(data, year, month, keyword) {
             continue;
         }
         var row = [r.year, MONTH_NAMES[r.month - 1], r.visitors, r.borrowed,
-            r.inquiries, r.computers, r.activities];
+        r.inquiries, r.computers, r.activities];
         if (keyword === '' || row.join(' ').toLowerCase().indexOf(keyword) !== -1) {
             rows.push(row);
         }
@@ -710,7 +710,7 @@ function buildInventoryReportRows(data, keyword) {
     for (var i = 0; i < data.books.length; i++) {
         var b = data.books[i];
         var row = [b.progression, b.title, b.author, b.date, b.callNumber, b.edition,
-            b.volume, b.issue, b.isbn, b.copies, b.location, b.remarks];
+        b.volume, b.issue, b.isbn, b.copies, b.location, b.remarks];
         if (keyword === '' || row.join(' ').toLowerCase().indexOf(keyword) !== -1) {
             rows.push(row);
         }
@@ -725,7 +725,7 @@ function renderReport() {
     var month = Number($('report-month').value);
     var keyword = $('report-search').value.trim().toLowerCase();
 
-    // Month filter only matters for the monthly report
+    // month filter only matters for the monthly report
     $('report-month').disabled = (type === 'inventory');
 
     if (type === 'monthly') {
@@ -763,7 +763,7 @@ function renderReport() {
     $('report-body').innerHTML = bodyHtml;
 }
 
-// Wraps a value in quotes so commas inside text do not break the CSV
+// wraps a value in quotes so commas inside text do not break the csv
 function csvCell(value) {
     return '"' + String(value).replace(/"/g, '""') + '"';
 }
@@ -811,7 +811,7 @@ function setupReports() {
 
 
 /* ==========================================================
-   8. START-UP
+   8. start-up
    ========================================================== */
 
 setupDashboard();
