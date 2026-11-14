@@ -1,0 +1,583 @@
+/* ==========================================
+   1. RESET
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* ==========================================
+   2. THEME VARIABLES (hi self. edit mo to to change da looks)
+   ========================================== */
+:root {
+    --bg-color: #f8f9fc;
+    --surface-color: #ffffff;
+    --primary-color: #1e3a5f;
+    --accent-color: #d97706;
+    --text-main: #1f2937;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+    --card-shadow: 0px 4px 15px rgba(0, 0, 0, 0.05);
+    --radius-lg: 14px;
+}
+
+/* ==========================================
+   3. BASE
+   ========================================== */
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+/* ==========================================
+   4. TOP HEADER
+   ========================================== */
+.top-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 64px;
+    background-color: var(--primary-color);
+    color: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    z-index: 10;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.staff-badge {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background-color: rgba(255, 255, 255, 0.12);
+    padding: 6px 14px 6px 8px;
+    border-radius: 999px;
+}
+
+.avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: var(--accent-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.staff-name {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.staff-role {
+    font-size: 11px;
+    opacity: 0.75;
+}
+
+/* ==========================================
+   5. LAYOUT + SIDEBAR
+   ========================================== */
+.layout {
+    padding-top: 64px;
+}
+
+.sidebar {
+    position: fixed;
+    top: 64px;
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    background-color: var(--surface-color);
+    border-right: 1px solid var(--border-color);
+    padding: 20px 14px;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 11px 14px;
+    margin-bottom: 4px;
+    border-radius: 10px;
+    color: var(--text-muted);
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.nav-link:hover {
+    background-color: var(--bg-color);
+    color: var(--primary-color);
+}
+
+.nav-link.active {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.content {
+    margin-left: 250px;
+    padding: 28px 32px 48px;
+}
+
+.view {
+    display: none;
+}
+
+.view.active {
+    display: block;
+}
+
+.page-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 20px;
+}
+
+/* ==========================================
+   6. CARDS
+   ========================================== */
+.card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--card-shadow);
+    padding: 22px;
+    margin-bottom: 22px;
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:hover {
+    box-shadow: 0px 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.card-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 16px;
+}
+
+.card-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.card-header-row .card-title {
+    margin-bottom: 0;
+}
+
+/* ==========================================
+   7. BUTTONS
+   ========================================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.btn-accent {
+    background-color: var(--accent-color);
+    color: #ffffff;
+}
+
+.btn-accent:hover {
+    background-color: #b45309;
+}
+
+.btn-outline {
+    background-color: var(--surface-color);
+    color: var(--primary-color);
+    border-color: var(--border-color);
+}
+
+.btn-outline:hover {
+    border-color: var(--primary-color);
+    background-color: var(--bg-color);
+}
+
+.btn-small {
+    padding: 5px 12px;
+    font-size: 12px;
+    border-radius: 8px;
+}
+
+.btn-danger {
+    color: #b91c1c;
+}
+
+.btn-danger:hover {
+    border-color: #b91c1c;
+    background-color: #fef2f2;
+}
+
+/* ==========================================
+   8. FORM CONTROLS
+   ========================================== */
+select,
+input[type="text"],
+input[type="number"] {
+    font-family: inherit;
+    font-size: 14px;
+    color: var(--text-main);
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 9px 12px;
+    width: 100%;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+select:focus,
+input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.12);
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+}
+
+.req {
+    color: #b91c1c;
+}
+
+.controls-bar {
+    display: flex;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.control-group {
+    min-width: 150px;
+}
+
+.control-spacer {
+    flex: 1;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.form-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
+.form-error {
+    color: #b91c1c;
+    font-size: 13px;
+    margin-top: 14px;
+    min-height: 18px;
+}
+
+.search-input {
+    max-width: 260px;
+}
+
+/* ==========================================
+   9. DASHBOARD
+   ========================================== */
+.summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px;
+    margin-bottom: 22px;
+}
+
+.summary-grid .card {
+    margin-bottom: 0;
+}
+
+.stat-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+}
+
+.stat-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--primary-color);
+}
+
+.chart-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 22px;
+}
+
+/* horizontal bar chart */
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.bar-label {
+    width: 34px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.bar-track {
+    flex: 1;
+    height: 16px;
+    background-color: var(--bg-color);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 6px;
+    transition: width 0.4s;
+}
+
+.bar-value {
+    width: 54px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* recent list */
+.recent-list {
+    list-style: none;
+}
+
+.recent-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.recent-item:last-child {
+    border-bottom: none;
+}
+
+.recent-name {
+    font-weight: 600;
+}
+
+.recent-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.tag {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background-color: #e8eef6;
+    color: var(--primary-color);
+    margin-right: 6px;
+}
+
+.empty-text {
+    color: var(--text-muted);
+    padding: 12px 0;
+}
+
+/* ==========================================
+   10. TABLES
+   ========================================== */
+.table-wrap {
+    overflow-x: auto;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+.data-table th {
+    text-align: left;
+    background-color: var(--bg-color);
+    color: var(--text-muted);
+    font-weight: 600;
+    white-space: nowrap;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table td {
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.data-table tbody tr:hover {
+    background-color: var(--bg-color);
+}
+
+.action-cell {
+    white-space: nowrap;
+}
+
+.action-cell .btn {
+    margin-right: 4px;
+}
+
+/* ==========================================
+   11. REPORT SHEET
+   ========================================== */
+.report-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.report-header h2 {
+    font-size: 20px;
+    color: var(--primary-color);
+}
+
+.report-header h3 {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.report-header p {
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.signature-block {
+    margin-top: 60px;
+    width: 260px;
+    margin-left: auto;
+    text-align: center;
+    font-size: 13px;
+}
+
+.signature-line {
+    border-top: 1px solid var(--text-main);
+    margin-bottom: 6px;
+}
+
+/* ==========================================
+   12. PRINT STYLES
+   ========================================== */
+@media print {
+
+    .top-header,
+    .sidebar,
+    .no-print,
+    .page-title {
+        display: none !important;
+    }
+
+    body {
+        background-color: #ffffff;
+        font-size: 12px;
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 0;
+    }
+
+    .layout {
+        padding-top: 0;
+    }
+
+    .card {
+        border: none;
+        box-shadow: none;
+        padding: 0;
+    }
+
+    .view:not(#view-reports) {
+        display: none !important;
+    }
+
+    .data-table th,
+    .data-table td {
+        border: 1px solid #999999;
+    }
+
+    .data-table th {
+        background-color: #eeeeee;
+        color: #000000;
+    }
+}
+
+/* ==========================================
+   13. RESPONSIVE
+   ========================================== */
+@media (max-width: 1000px) {
+
+    .summary-grid,
+    .form-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .chart-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 700px) {
+    .sidebar {
+        position: static;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    .content {
+        margin-left: 0;
+        padding: 20px 16px;
+    }
+
+    .summary-grid,
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}

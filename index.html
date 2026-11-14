@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Library Management System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ===== TOP HEADER ===== -->
+    <header class="top-header">
+        <div class="logo">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span>City Library System</span>
+        </div>
+        <div class="staff-badge">
+            <div class="avatar">LS</div>
+            <div>
+                <div class="staff-name">Library Staff</div>
+                <div class="staff-role">Librarian</div>
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <nav>
+                <a href="#" class="nav-link active" data-view="view-dashboard">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-link" data-view="view-inventory">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    Book Inventory
+                </a>
+                <a href="#" class="nav-link" data-view="view-monthly-entry">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                    Monthly Statistics Entry
+                </a>
+                <a href="#" class="nav-link" data-view="view-reports">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                    Detailed Reports &amp; Export
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="content">
+
+            <!-- ========== DASHBOARD ========== -->
+            <section id="view-dashboard" class="view active">
+                <h1 class="page-title">Dashboard</h1>
+
+                <div class="controls-bar card">
+                    <div class="control-group">
+                        <label for="dash-year">Year</label>
+                        <select id="dash-year"></select>
+                    </div>
+                    <div class="control-group">
+                        <label for="dash-month">Month</label>
+                        <select id="dash-month"></select>
+                    </div>
+                    <div class="control-spacer"></div>
+                    <button class="btn btn-accent" id="btn-add-monthly">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        Add Monthly Record
+                    </button>
+                    <button class="btn btn-outline" id="btn-go-inventory">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+                        Go to Inventory
+                    </button>
+                </div>
+
+                <!-- Summary cards: titles can be edited right here in the HTML -->
+                <div class="summary-grid">
+                    <div class="card stat-card">
+                        <div class="stat-title">Total Library Visitors</div>
+                        <div class="stat-value" id="stat-visitors">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-title">Books Borrowed / Circulation</div>
+                        <div class="stat-value" id="stat-borrowed">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-title">Total Books in Inventory</div>
+                        <div class="stat-value" id="stat-inventory">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-title">Reference Inquiries</div>
+                        <div class="stat-value" id="stat-inquiries">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-title">Internet / Computer Users</div>
+                        <div class="stat-value" id="stat-computers">0</div>
+                    </div>
+                    <div class="card stat-card">
+                        <div class="stat-title">Library Activities Conducted</div>
+                        <div class="stat-value" id="stat-activities">0</div>
+                    </div>
+                </div>
+
+                <div class="chart-grid">
+                    <div class="card">
+                        <h2 class="card-title">Monthly Visitors</h2>
+                        <div class="bar-chart" id="chart-visitors"></div>
+                    </div>
+                    <div class="card">
+                        <h2 class="card-title">Monthly Borrowed Books</h2>
+                        <div class="bar-chart" id="chart-borrowed"></div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Recently Added or Edited Records</h2>
+                    <ul class="recent-list" id="recent-list"></ul>
+                </div>
+            </section>
+
+            <!-- ========== BOOK INVENTORY ========== -->
+            <section id="view-inventory" class="view">
+                <h1 class="page-title">Book Inventory</h1>
+
+                <div class="card">
+                    <h2 class="card-title" id="book-form-title">Add a New Book</h2>
+                    <form id="book-form" novalidate>
+                        <input type="hidden" id="book-id">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="book-progression">Progression No. <span class="req">*</span></label>
+                                <input type="text" id="book-progression">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-title">Title <span class="req">*</span></label>
+                                <input type="text" id="book-title">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-author">Author / Editor <span class="req">*</span></label>
+                                <input type="text" id="book-author">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-date">Date of Publication</label>
+                                <input type="text" id="book-date" placeholder="e.g. 2019">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-call">Call Number</label>
+                                <input type="text" id="book-call">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-edition">Edition</label>
+                                <input type="text" id="book-edition">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-volume">Volume</label>
+                                <input type="text" id="book-volume">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-issue">Issue No.</label>
+                                <input type="text" id="book-issue">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-isbn">ISBN / ISSN</label>
+                                <input type="text" id="book-isbn">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-copies">No. of Copies</label>
+                                <input type="number" id="book-copies" min="1" value="1">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-location">Location</label>
+                                <input type="text" id="book-location" placeholder="Shelf / Section">
+                            </div>
+                            <div class="form-field">
+                                <label for="book-remarks">Remarks</label>
+                                <input type="text" id="book-remarks">
+                            </div>
+                        </div>
+                        <p class="form-error" id="book-error"></p>
+                        <div class="form-actions">
+                            <button type="button" class="btn btn-outline" id="btn-fill-na">Fill Empty Optional Fields with "N/A"</button>
+                            <div class="control-spacer"></div>
+                            <button type="button" class="btn btn-outline" id="btn-clear-book">Clear Form</button>
+                            <button type="submit" class="btn btn-accent">Save Book to Inventory</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-header-row">
+                        <h2 class="card-title">Saved Books</h2>
+                        <input type="text" id="inventory-search" class="search-input" placeholder="Search books...">
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Progression No.</th>
+                                    <th>Title</th>
+                                    <th>Author / Editor</th>
+                                    <th>Date of Publication</th>
+                                    <th>Call Number</th>
+                                    <th>Edition</th>
+                                    <th>Volume</th>
+                                    <th>Issue No.</th>
+                                    <th>ISBN / ISSN</th>
+                                    <th>Copies</th>
+                                    <th>Location</th>
+                                    <th>Remarks</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== MONTHLY STATISTICS ENTRY ========== -->
+            <section id="view-monthly-entry" class="view">
+                <h1 class="page-title">Monthly Statistics Entry</h1>
+
+                <div class="card">
+                    <h2 class="card-title" id="monthly-form-title">Add Monthly Record</h2>
+                    <form id="monthly-form" novalidate>
+                        <input type="hidden" id="monthly-id">
+                        <div class="form-grid">
+                            <div class="form-field">
+                                <label for="monthly-year">Year</label>
+                                <select id="monthly-year"></select>
+                            </div>
+                            <div class="form-field">
+                                <label for="monthly-month">Month</label>
+                                <select id="monthly-month"></select>
+                            </div>
+                            <div class="form-field">
+                                <label for="monthly-visitors">Total Library Visitors</label>
+                                <input type="number" id="monthly-visitors" min="0" value="0">
+                            </div>
+                            <div class="form-field">
+                                <label for="monthly-borrowed">Books Borrowed / Circulation</label>
+                                <input type="number" id="monthly-borrowed" min="0" value="0">
+                            </div>
+                            <div class="form-field">
+                                <label for="monthly-inquiries">Reference Inquiries</label>
+                                <input type="number" id="monthly-inquiries" min="0" value="0">
+                            </div>
+                            <div class="form-field">
+                                <label for="monthly-computers">Internet / Computer Users</label>
+                                <input type="number" id="monthly-computers" min="0" value="0">
+                            </div>
+                            <div class="form-field">
+                                <label for="monthly-activities">Library Activities Conducted</label>
+                                <input type="number" id="monthly-activities" min="0" value="0">
+                            </div>
+                        </div>
+                        <p class="form-error" id="monthly-error"></p>
+                        <div class="form-actions">
+                            <div class="control-spacer"></div>
+                            <button type="button" class="btn btn-outline" id="btn-clear-monthly">Clear Form</button>
+                            <button type="submit" class="btn btn-accent">Save Monthly Record</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2 class="card-title">Saved Monthly Records</h2>
+                    <div class="table-wrap">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Year</th>
+                                    <th>Month</th>
+                                    <th>Visitors</th>
+                                    <th>Borrowed</th>
+                                    <th>Inquiries</th>
+                                    <th>Computer Users</th>
+                                    <th>Activities</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monthly-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ========== REPORTS & EXPORT ========== -->
+            <section id="view-reports" class="view">
+                <h1 class="page-title">Detailed Reports &amp; Export</h1>
+
+                <div class="controls-bar card no-print">
+                    <div class="control-group">
+                        <label for="report-type">Report Type</label>
+                        <select id="report-type">
+                            <option value="monthly">Monthly Statistical Summary</option>
+                            <option value="inventory">Book Inventory Masterlist</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="report-year">Year</label>
+                        <select id="report-year"></select>
+                    </div>
+                    <div class="control-group">
+                        <label for="report-month">Month</label>
+                        <select id="report-month"></select>
+                    </div>
+                    <div class="control-group">
+                        <label for="report-search">Search</label>
+                        <input type="text" id="report-search" placeholder="Keyword...">
+                    </div>
+                    <div class="control-spacer"></div>
+                    <button class="btn btn-outline" id="btn-export-csv">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        Export to CSV
+                    </button>
+                    <button class="btn btn-accent" id="btn-print">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                        Print / Save as PDF
+                    </button>
+                </div>
+
+                <div class="card report-sheet">
+                    <div class="report-header">
+                        <h2>City Library</h2>
+                        <h3 id="report-title">Monthly Statistical Summary</h3>
+                        <p id="report-subtitle"></p>
+                    </div>
+                    <div class="table-wrap">
+                        <table class="data-table" id="report-table">
+                            <thead id="report-head"></thead>
+                            <tbody id="report-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="signature-block">
+                        <div class="signature-line"></div>
+                        <div>Librarian-in-Charge</div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+
