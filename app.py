@@ -35,7 +35,6 @@ def init_db():
             updatedAt REAL
         )
     ''')
-#----------------------------------------------    
 
     conn.execute('''
         CREATE TABLE IF NOT EXISTS monthly_records (
@@ -55,6 +54,28 @@ def init_db():
     conn.close()
 
 
+ 
+#----------------------------------------------    
+# FUNCTION 1 
+@app.route('/api/dashboard', methods=['GET'])
+def get_dashboard():
+    conn = get_db_connections()
+    books = conn.execute('SELECT * FROM books').fetchall()
+    monthly = conn.execute('SELECT * FROM monthly_records').fetchall()
+    conn.close()
+
+    return jsonify({
+        "books": [dict(b) for b in books],
+        "monthly": [dict(m) for m in monthly]
+    })
+
+
+
+
+
+
+#----------------------------------------------  
+
 init_db()
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)  
+    app.run(debug=True, port=5000) 
