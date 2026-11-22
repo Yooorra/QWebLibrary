@@ -17,6 +17,7 @@ def get_db_connections():
 def init_db():
     conn = get_db_connections()
 
+    #TABLES
     conn.execute('''
         CREATE TABLE IF NOT EXISTS books (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -53,8 +54,6 @@ def init_db():
     conn.commit()
     conn.close()
 
-
- 
 #----------------------------------------------    
 # FUNCTION 1 
 @app.route('/api/dashboard', methods=['GET'])
@@ -68,11 +67,6 @@ def get_dashboard():
         "books": [dict(b) for b in books],
         "monthly": [dict(m) for m in monthly]
     })
-
-
-
-
-
 
 #----------------------------------------------  
 
