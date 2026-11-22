@@ -20,7 +20,7 @@ def init_db():
     #TABLES
     conn.execute('''
         CREATE TABLE IF NOT EXISTS books (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY AUTOINCREMENT,
             progression TEXT NOT NULL,
             title TEXT NOT NULL,
             author TEXT NOT NULL,
@@ -33,13 +33,13 @@ def init_db():
             copies INTEGER DEFAULT 1,
             location TEXT,
             remarks TEXT,
-            updatedAt REAL
+            updatedAt INTEGER
         )
     ''')
 
     conn.execute('''
         CREATE TABLE IF NOT EXISTS monthly_records (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY AUTOINCREMENT,
             year INTEGER NOT NULL,
             month INTEGER NOT NULL,
             visitors INTEGER DEFAULT 0,
@@ -47,7 +47,7 @@ def init_db():
             inquiries INTEGER DEFAULT 0,
             computers INTEGER DEFAULT 0,
             activities INTEGER DEFAULT 0,
-            updatedAt REAL,
+            updatedAt INTEGER,
             UNIQUE(year, month)
         )
     ''')
