@@ -1,6 +1,8 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 from flask_cors import CORS
 import sqlite3
+import uuid
+import time
 
 app = Flask(__name__)
 CORS(app)
@@ -20,7 +22,7 @@ def init_db():
     #TABLES
     conn.execute('''
         CREATE TABLE IF NOT EXISTS books (
-            id TEXT PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             progression TEXT NOT NULL,
             title TEXT NOT NULL,
             author TEXT NOT NULL,
@@ -39,7 +41,7 @@ def init_db():
 
     conn.execute('''
         CREATE TABLE IF NOT EXISTS monthly_records (
-            id TEXT PRIMARY KEY AUTOINCREMENT,
+            id TEXT PRIMARY KEY,
             year INTEGER NOT NULL,
             month INTEGER NOT NULL,
             visitors INTEGER DEFAULT 0,
@@ -73,3 +75,53 @@ def get_dashboard():
 init_db()
 if __name__ == '__main__':
     app.run(debug=True, port=5000) 
+
+#----------------------------------------------
+# FUNCTION 2: ADD A NEW BOOK
+@app.route('/api/books', methods=['POST'])
+def add_book():
+    data = request.get_json() or {}
+
+    if not data.get('progression') or not data.get('progression').strip() or \
+       not data.get('title') or not data.get('title').strip() or \
+       not data.get('author') or not data.get('author').strip():
+        return jsonify({"error": "Progression, title, and author are required"}), 400
+
+    book_id = "book-" + str(uuid.uuid4())
+    updated_at = int(__import__('time').time() * 1000)
+
+    conn = get_db_connections()
+
+    conn.execute('''
+        INSERT INTO books (
+            id, progression, title, author, date, callNumber,
+            edition, volume, issue, isbn, copies, location,
+            remarks, updatedAt
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        book_id,
+        data['progression'],
+        data['title'],
+        data['author'],
+        data.get('date'),
+        data.get('callNumber'),
+        data.get('edition'),
+        data.get('volume'),
+        data.get('issue'),
+        data.get('isbn'),
+        data.get('copies', 1),
+        data.get('location'),
+        data.get('remarks'),
+        updated_at
+    ))
+
+    conn.commit()
+
+    book = conn.execute(
+        'SELECT * FROM books WHERE id = ?', (book_id,)
+    ).fetchone()
+
+    conn.close()
+
+    return jsonify(dict(book))
