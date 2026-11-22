@@ -11,7 +11,7 @@
 # every url below starts with: /api
 # the front-end talks to the server using json (like a python dictionary).
 
-
+# THIS STEP IS DONE, required imports and setups, I'll just leave the comments here for reference.
 # ==========================================================
 # STEP 0: SETUP
 # ==========================================================
@@ -19,10 +19,28 @@
 # - turn on CORS (the front-end is a different "address" than the server,
 #   so the browser will block it if you forget this!)
 # - pick a database (sqlite is the easiest for beginners)
+
+# - these tables are in the next step 
 # - make 2 tables: one for books, one for monthly records
 #   (check the fields listed below)
 
+from flask import Flask
+from flask_cors import CORS
+import sqlite3
+import os
 
+app = Flask(__name__)
+CORS(app)
+
+DATABASE = os.path.join(os.path.dirname(__file__), "library.db")
+
+
+def get_db_connection():
+    connection = sqlite3.connect(DATABASE)
+    connection.row_factory = sqlite3.Row
+    return connection
+
+#THIS STEP IS ALSO DONE, the database is already created and initialized, but I'll leave the comments here for reference.
 # ==========================================================
 # THE 2 KINDS OF DATA
 # ==========================================================
@@ -58,6 +76,53 @@
 #
 # NOTE: keep the field names EXACTLY like above (same spelling and caps)
 # or the front-end will break!
+
+def initialize_database():
+    connection = get_db_connection()
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS books (
+            id TEXT PRIMARY KEY,
+            progression TEXT NOT NULL,
+            title TEXT NOT NULL,
+            author TEXT NOT NULL,
+            date TEXT,
+            callNumber TEXT,
+            edition TEXT,
+            volume TEXT,
+            issue TEXT,
+            isbn TEXT,
+            copies INTEGER DEFAULT 1,
+            location TEXT,
+            remarks TEXT,
+            updatedAt INTEGER
+        )
+    """)
+
+    connection.execute("""
+        CREATE TABLE IF NOT EXISTS monthly (
+            id TEXT PRIMARY KEY,
+            year INTEGER,
+            month INTEGER,
+            visitors INTEGER,
+            borrowed INTEGER,
+            inquiries INTEGER,
+            computers INTEGER,
+            activities INTEGER,
+            updatedAt INTEGER,
+            UNIQUE(year, month)
+        )
+    """)
+
+    connection.commit()
+    connection.close()
+
+
+initialize_database()
+
+
+if __name__ == "__main__":
+    app.run(host="127.0.0.1", port=5000, debug=True)
 
 
 # ==========================================================
