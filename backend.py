@@ -73,7 +73,7 @@
 #   an object with 2 lists: "books" and "monthly"
 #   (if there is nothing yet, send empty lists, NOT an error)
 
-
+#THIS STEP IS ALREADY DONE
 # ==========================================================
 # FUNCTION 2: ADD A NEW BOOK
 # ==========================================================
@@ -88,7 +88,7 @@
 # if something is wrong (like missing title), send back an error message
 # and a 400 status code
 
-
+#THIS STEP IS ALREADY DONE
 # ==========================================================
 # FUNCTION 3: EDIT AN EXISTING BOOK
 # ==========================================================

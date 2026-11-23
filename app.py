@@ -89,7 +89,6 @@ def add_book():
 
     book_id = "book-" + str(uuid.uuid4())
     updated_at = int(__import__('time').time() * 1000)
-
     conn = get_db_connections()
 
     conn.execute('''
@@ -125,3 +124,62 @@ def add_book():
     conn.close()
 
     return jsonify(dict(book))
+
+#----------------------------------------------
+# FUNCTION 3: EDIT AN EXISTING BOOK
+@app.route('/api/books/<id>', methods=['PUT']) #Instructions said to use PUT
+def edit_book(id):
+    data = request.get_json() or {}
+    conn = get_db_connections()
+    book = conn.execute(
+        'SELECT * FROM books WHERE id = ?', (id,)
+    ).fetchone()
+
+    if not book:
+        conn.close()
+        return jsonify({"error": "Book not found"}), 404
+
+    updated_at = int(time.time() * 1000)
+
+    conn.execute('''
+        UPDATE books SET
+            progression = ?,
+            title = ?,
+            author = ?,
+            date = ?,
+            callNumber = ?,
+            edition = ?,
+            volume = ?,
+            issue = ?,
+            isbn = ?,
+            copies = ?,
+            location = ?,
+            remarks = ?,
+            updatedAt = ?
+        WHERE id = ?
+    ''', (
+        data.get('progression'),
+        data.get('title'),
+        data.get('author'),
+        data.get('date'),
+        data.get('callNumber'),
+        data.get('edition'),
+        data.get('volume'),
+        data.get('issue'),
+        data.get('isbn'),
+        data.get('copies', 1),
+        data.get('location'),
+        data.get('remarks'),
+        updated_at,
+        id
+    ))
+
+    conn.commit()
+
+    updated_book = conn.execute(
+        'SELECT * FROM books WHERE id = ?', (id,)
+    ).fetchone()
+
+    conn.close()
+
+    return jsonify(dict(updated_book))
