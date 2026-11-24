@@ -56,8 +56,9 @@ def init_db():
     conn.commit()
     conn.close()
 
-#----------------------------------------------    
+# ==========================================================    
 # FUNCTION 1 
+# ==========================================================
 @app.route('/api/dashboard', methods=['GET'])
 def get_dashboard():
     conn = get_db_connections()
@@ -70,14 +71,10 @@ def get_dashboard():
         "monthly": [dict(m) for m in monthly]
     })
 
-#----------------------------------------------  
 
-init_db()
-if __name__ == '__main__':
-    app.run(debug=True, port=5000) 
-
-#----------------------------------------------
+# ==========================================================
 # FUNCTION 2: ADD A NEW BOOK
+# ==========================================================
 @app.route('/api/books', methods=['POST'])
 def add_book():
     data = request.get_json() or {}
@@ -88,7 +85,7 @@ def add_book():
         return jsonify({"error": "Progression, title, and author are required"}), 400
 
     book_id = "book-" + str(uuid.uuid4())
-    updated_at = int(__import__('time').time() * 1000)
+    updated_at = int(time.time() * 1000)
     conn = get_db_connections()
 
     conn.execute('''
@@ -125,8 +122,10 @@ def add_book():
 
     return jsonify(dict(book))
 
-#----------------------------------------------
+# ==========================================================
 # FUNCTION 3: EDIT AN EXISTING BOOK
+# ==========================================================
+
 @app.route('/api/books/<id>', methods=['PUT']) #Instructions said to use PUT
 def edit_book(id):
     data = request.get_json() or {}
@@ -183,3 +182,86 @@ def edit_book(id):
     conn.close()
 
     return jsonify(dict(updated_book))
+
+# ==========================================================
+# FUNCTION 4: ADD A NEW MONTHLY RECORD
+# ==========================================================
+@app.route('/api/monthly', methods=['POST'])
+def add_monthly_record():
+
+    data = request.get_json() or {}
+    month = data.get('month')
+    year = data.get('year')
+
+    if month is None or year is None:
+        return jsonify({"error": "month and year are required"}), 400
+
+    try:
+        month = int(month)
+        year = int(year)
+    except (TypeError, ValueError):
+        return jsonify({"error": "month and year must be numbers"}), 400
+
+    if month < 1 or month > 12:
+        return jsonify({"error": "month must be from 1 to 12"}), 400
+    if year < 0:
+        return jsonify({"error": "year cannot be negative"}), 400
+
+    
+    counts = {}
+    for field in ('visitors', 'borrowed', 'inquiries', 'computers', 'activities'):
+        try:
+            counts[field] = int(data.get(field, 0) or 0)
+        except (TypeError, ValueError):
+            return jsonify({"error": field + " must be a number"}), 400
+        if counts[field] < 0:
+            return jsonify({"error": field + " cannot be negative"}), 400
+
+    conn = get_db_connections()
+
+    #CHecks if year/month exists
+    existing = conn.execute(
+        'SELECT * FROM monthly_records WHERE year = ? AND month = ?',
+        (year, month)
+    ).fetchone()
+
+    if existing:
+        conn.close()
+        return jsonify({"error": "A record for that month and year already exists"}), 400
+
+    record_id = "monthly-" + str(uuid.uuid4())
+    updated_at = int(time.time() * 1000)
+
+    conn.execute('''
+        INSERT INTO monthly_records (
+            id, year, month, visitors, borrowed, inquiries, computers, activities, updatedAt
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    ''', (
+        record_id,
+        year,
+        month,
+        counts['visitors'],
+        counts['borrowed'],
+        counts['inquiries'],
+        counts['computers'],
+        counts['activities'],
+        updated_at
+    ))
+    conn.commit()
+
+    new_record = conn.execute(
+        'SELECT * FROM monthly_records WHERE id = ?', (record_id,)
+    ).fetchone()
+
+    conn.close()
+
+    return jsonify(dict(new_record)), 201
+
+
+# ==========================================================
+#NOTE: IF YOUR GOING TO CODE DONT SURPASS THESE 3 LINES OF CODE! 
+# ==========================================================
+init_db()
+if __name__ == '__main__':
+    app.run(debug=True, port=5000) 
