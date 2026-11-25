@@ -258,6 +258,128 @@ def add_monthly_record():
 
     return jsonify(dict(new_record)), 201
 
+# ==========================================================
+# FUNCTION 5: EDIT AN EXISTING MONTHLY RECORD - Earl
+# ==========================================================
+@app.route('/api/monthly/<id>', methods=['PUT'])
+def edit_monthly_record(id):
+    data = request.get_json() or {}
+
+    conn = get_db_connections()
+
+    #find the record with that id
+    record = conn.execute(
+        'SELECT * FROM monthly_records WHERE id = ?', (id,)
+    ).fetchone()
+
+    if not record:
+        conn.close()
+        return jsonify({"error": "Monthly record not found"}), 404
+
+    month = data.get('month')
+    year = data.get('year')
+
+    if month is None or year is None:
+        conn.close()
+        return jsonify({"error": "month and year are required"}), 400
+
+    try:
+        month = int(month)
+        year = int(year)
+    except (TypeError, ValueError):
+        conn.close()
+        return jsonify({"error": "month and year must be numbers"}), 400
+
+    if month < 1 or month > 12:
+        conn.close()
+        return jsonify({"error": "month must be from 1 to 12"}), 400
+    if year < 0:
+        conn.close()
+        return jsonify({"error": "year cannot be negative"}), 400
+
+    counts = {}
+    for field in ('visitors', 'borrowed', 'inquiries', 'computers', 'activities'):
+        try:
+            counts[field] = int(data.get(field, 0) or 0)
+        except (TypeError, ValueError):
+            conn.close()
+            return jsonify({"error": field + " must be a number"}), 400
+        if counts[field] < 0:
+            conn.close()
+            return jsonify({"error": field + " cannot be negative"}), 400
+
+    #make sure the new yer and month is not used by another record
+    duplicate = conn.execute(
+        'SELECT id FROM monthly_records WHERE year = ? AND month = ? AND id != ?',
+        (year, month, id)
+    ).fetchone()
+
+    if duplicate:
+        conn.close()
+        return jsonify({"error": "A record for that month and year already exists"}), 400
+
+    updated_at = int(time.time() * 1000)
+
+    conn.execute('''
+        UPDATE monthly_records SET
+            year = ?,
+            month = ?,
+            visitors = ?,
+            borrowed = ?,
+            inquiries = ?,
+            computers = ?,
+            activities = ?,
+            updatedAt = ?
+        WHERE id = ?
+    ''', (
+        year,
+        month,
+        counts['visitors'],
+        counts['borrowed'],
+        counts['inquiries'],
+        counts['computers'],
+        counts['activities'],
+        updated_at,
+        id
+    ))
+    conn.commit()
+
+    updated_record = conn.execute(
+        'SELECT * FROM monthly_records WHERE id = ?', (id,)
+    ).fetchone()
+
+    conn.close()
+
+    return jsonify(dict(updated_record))
+
+# ==========================================================
+# FUNCTION 6: DELETE A RECORD -EARL
+# ==========================================================
+@app.route('/api/records/<id>', methods=['DELETE'])
+def delete_record(id):
+    #the id tells you which table to look at
+    if id.startswith('book-'):
+        table = 'books'
+    elif id.startswith('monthly-'):
+        table = 'monthly_records'
+    else:
+        return jsonify({"error": "Record not found"}), 404
+
+    conn = get_db_connections()
+
+    record = conn.execute(
+        f'SELECT id FROM {table} WHERE id = ?', (id,)
+    ).fetchone()
+
+    if not record:
+        conn.close()
+        return jsonify({"error": "Record not found"}), 404
+
+    conn.execute(f'DELETE FROM {table} WHERE id = ?', (id,))
+    conn.commit()
+    conn.close()
+
+    return jsonify({"message": "Record deleted successfully"})
 
 # ==========================================================
 #NOTE: IF YOUR GOING TO CODE DONT SURPASS THESE 3 LINES OF CODE! 
