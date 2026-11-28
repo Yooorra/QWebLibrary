@@ -129,6 +129,12 @@ def add_book():
 @app.route('/api/books/<id>', methods=['PUT']) #Instructions said to use PUT
 def edit_book(id):
     data = request.get_json() or {}
+
+    if not data.get('progression') or not data.get('progression').strip() or \
+       not data.get('title') or not data.get('title').strip() or \
+       not data.get('author') or not data.get('author').strip():
+        return jsonify({"error": "Progression, title, and author are required"}), 400
+    
     conn = get_db_connections()
     book = conn.execute(
         'SELECT * FROM books WHERE id = ?', (id,)
@@ -157,9 +163,9 @@ def edit_book(id):
             updatedAt = ?
         WHERE id = ?
     ''', (
-        data.get('progression'),
-        data.get('title'),
-        data.get('author'),
+        data['progression'],
+        data['title'],
+        data['author'],
         data.get('date'),
         data.get('callNumber'),
         data.get('edition'),
