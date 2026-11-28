@@ -19,104 +19,93 @@
    with fetch() calls when the backend is ready.
    ========================================================== */
 
-var BOOKS_KEY = 'library_books';
-var MONTHLY_KEY = 'library_monthly';
+
 // TODO BACKEND: base url of the flask server
 var API_URL = 'http://127.0.0.1:5000/api';
 
-// small helpers that read/write localstorage (remove once the backend is used)
-function readList(key) {
-    var text = localStorage.getItem(key);
-    if (text === null) {
-        return [];
+var dashboardData = {
+    books: [],
+    monthly: []
+};
+
+// FUNCTION 1 - Dashboard
+async function fetchDashboardData() {
+    const response = await fetch(API_URL + '/dashboard');
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch dashboard data');
     }
-    return JSON.parse(text);
+
+    dashboardData = data;
+    return data;
 }
 
-function writeList(key, list) {
-    localStorage.setItem(key, JSON.stringify(list));
-}
+// FUNCTION2 - Add Books
+async function saveBookToBackend(bookData) {
+    const method = bookData.id ? 'PUT' : 'POST';
 
-// returns { books: [...], monthly: [...] }
-function fetchDashboardData() {
-    // TODO BACKEND: replace the two lines below with:
-    //   const response = await fetch(API_URL + '/dashboard');
-    //   return await response.json();   // expected: { books: [], monthly: [] }
-    // (the function must then become "async" and the callers must "await" it)
-    var books = readList(BOOKS_KEY);
-    var monthly = readList(MONTHLY_KEY);
-    return { books: books, monthly: monthly };
-}
+    const url = bookData.id
+        ? API_URL + '/books/' + bookData.id
+        : API_URL + '/books';
 
-// adds a new book, or updates it if the book already has an id
-function saveBookToBackend(bookData) {
-    var books = readList(BOOKS_KEY);
-    bookData.updatedAt = Date.now();
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(bookData)
+    });
 
-    // TODO BACKEND: replace everything below with something like:
-    //   const method = bookData.id ? 'PUT' : 'POST';
-    //   const url = bookData.id ? API_URL + '/books/' + bookData.id : API_URL + '/books';
-    //   await fetch(url, {
-    //       method: method,
-    //       headers: { 'Content-Type': 'application/json' },
-    //       body: JSON.stringify(bookData)
-    //   });
-    if (bookData.id) {
-        for (var i = 0; i < books.length; i++) {
-            if (books[i].id === bookData.id) {
-                books[i] = bookData;
-            }
-        }
-    } else {
-        bookData.id = 'book-' + Date.now();
-        books.push(bookData);
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.error || 'Failed to save book');
     }
-    writeList(BOOKS_KEY, books);
+
+    return result;
 }
 
-// adds a new monthly record, or updates it if the record already has an id
-function saveMonthlyRecordToBackend(statsData) {
-    var records = readList(MONTHLY_KEY);
-    statsData.updatedAt = Date.now();
+// FUNCTION 4 - Add Monthly Record
+async function saveMonthlyRecordToBackend(statsData) {
+    const method = statsData.id ? 'PUT' : 'POST';
 
-    // TODO BACKEND: replace everything below with something like:
-    //   const method = statsData.id ? 'PUT' : 'POST';
-    //   const url = statsData.id ? API_URL + '/monthly/' + statsData.id : API_URL + '/monthly';
-    //   await fetch(url, {
-    //       method: method,
-    //       headers: { 'Content-Type': 'application/json' },
-    //       body: JSON.stringify(statsData)
-    //   });
-    if (statsData.id) {
-        for (var i = 0; i < records.length; i++) {
-            if (records[i].id === statsData.id) {
-                records[i] = statsData;
-            }
-        }
-    } else {
-        statsData.id = 'monthly-' + Date.now();
-        records.push(statsData);
+    const url = statsData.id
+        ? API_URL + '/monthly/' + statsData.id
+        : API_URL + '/monthly';
+
+    const response = await fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(statsData)
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.error || 'Failed to save monthly record');
     }
-    writeList(MONTHLY_KEY, records);
+
+    return result;
 }
 
-// deletes a book or a monthly record. the id starts with "book-" or "monthly-"
-function deleteRecordFromBackend(id) {
-    // TODO BACKEND: replace everything below with:
-    //   await fetch(API_URL + '/records/' + id, { method: 'DELETE' });
-    var key = MONTHLY_KEY;
-    if (id.indexOf('book-') === 0) {
-        key = BOOKS_KEY;
+// FUNCTION ^ - Delete Record
+async function deleteRecordFromBackend(id) {
+    const response = await fetch(API_URL + '/records/' + id, {
+        method: 'DELETE'
+    });
+
+    const result = await response.json();
+
+    if (!response.ok) {
+        throw new Error(result.error || 'Failed to delete record');
     }
-    var list = readList(key);
-    var remaining = [];
-    for (var i = 0; i < list.length; i++) {
-        if (list[i].id !== id) {
-            remaining.push(list[i]);
-        }
-    }
-    writeList(key, remaining);
+
+    return result;
 }
+
 
 
 /* ==========================================================
@@ -196,7 +185,9 @@ function showView(viewId) {
         }
     }
 
-    refreshAll();
+    refreshAll().catch(function (error) {
+        console.error(error);
+    });
     window.scrollTo(0, 0);
 }
 
@@ -219,7 +210,9 @@ function setupNavigation() {
 }
 
 // re-draws everything. called after any change so numbers stay up to date.
-function refreshAll() {
+async function refreshAll() {
+    await fetchDashboardData();
+
     renderDashboard();
     renderInventoryTable();
     renderMonthlyTable();
@@ -227,12 +220,13 @@ function refreshAll() {
 }
 
 
+
 /* ==========================================================
    4. dashboard
    ========================================================== */
 
 function renderDashboard() {
-    var data = fetchDashboardData();
+    var data = dashboardData;
     var year = Number($('dash-year').value);
     var month = Number($('dash-month').value);
 
@@ -399,7 +393,7 @@ var BOOK_FIELDS = {
 };
 
 function findBook(id) {
-    var books = fetchDashboardData().books;
+    var books = dashboardData.books;
     for (var i = 0; i < books.length; i++) {
         if (books[i].id === id) {
             return books[i];
@@ -407,6 +401,7 @@ function findBook(id) {
     }
     return null;
 }
+
 
 // "fill empty optional fields with n/a" button
 function fillEmptyOptionalFields() {
@@ -426,7 +421,7 @@ function clearBookForm() {
     $('book-form-title').textContent = 'Add a New Book';
 }
 
-function handleBookSubmit(event) {
+async function handleBookSubmit(event) {
     event.preventDefault();
 
     var progression = $('book-progression').value.trim();
@@ -459,9 +454,13 @@ function handleBookSubmit(event) {
         remarks: $('book-remarks').value.trim()
     };
 
-    saveBookToBackend(bookData);
-    clearBookForm();
-    refreshAll();
+    try {
+        await saveBookToBackend(bookData);
+        clearBookForm();
+        await refreshAll();
+    } catch (error) {
+        $('book-error').textContent = error.message;
+    }
 }
 
 function startEditBook(id) {
@@ -479,7 +478,7 @@ function startEditBook(id) {
 }
 
 function renderInventoryTable() {
-    var books = fetchDashboardData().books;
+    var books = dashboardData.books;
     var keyword = $('inventory-search').value.trim().toLowerCase();
     var html = '';
 
@@ -519,15 +518,19 @@ function setupInventory() {
     $('btn-clear-book').addEventListener('click', clearBookForm);
     $('inventory-search').addEventListener('input', renderInventoryTable);
 
-    $('inventory-body').addEventListener('click', function (event) {
+    $('inventory-body').addEventListener('click', async function (event) {
         var editId = event.target.getAttribute('data-edit-id');
         var deleteId = event.target.getAttribute('data-delete-id');
         if (editId) {
             startEditBook(editId);
         }
         if (deleteId && confirm('Delete this book from the inventory?')) {
-            deleteRecordFromBackend(deleteId);
-            refreshAll();
+            try {
+                await deleteRecordFromBackend(deleteId);
+                await refreshAll();
+            } catch (error) {
+                alert(error.message);
+            }
         }
     });
 }
@@ -538,7 +541,7 @@ function setupInventory() {
    ========================================================== */
 
 function findMonthly(id) {
-    var records = fetchDashboardData().monthly;
+    var records = dashboardData.monthly;
     for (var i = 0; i < records.length; i++) {
         if (records[i].id === id) {
             return records[i];
@@ -567,7 +570,7 @@ function numberFromInput(inputId) {
     return value;
 }
 
-function handleMonthlySubmit(event) {
+async function handleMonthlySubmit(event) {
     event.preventDefault();
 
     var year = Number($('monthly-year').value);
@@ -575,7 +578,7 @@ function handleMonthlySubmit(event) {
     var id = $('monthly-id').value;
 
     // only one record is allowed for each year + month
-    var records = fetchDashboardData().monthly;
+    var records = dashboardData.monthly;
     for (var i = 0; i < records.length; i++) {
         if (records[i].year === year && records[i].month === month && records[i].id !== id) {
             $('monthly-error').textContent = 'A record for ' + MONTH_NAMES[month - 1] + ' ' + year +
@@ -595,9 +598,13 @@ function handleMonthlySubmit(event) {
         activities: numberFromInput('monthly-activities')
     };
 
-    saveMonthlyRecordToBackend(statsData);
-    clearMonthlyForm();
-    refreshAll();
+    try {
+        await saveMonthlyRecordToBackend(statsData);
+        clearMonthlyForm();
+        await refreshAll();
+    } catch (error) {
+        $('monthly-error').textContent = error.message;
+    }
 }
 
 function startEditMonthly(id) {
@@ -619,7 +626,7 @@ function startEditMonthly(id) {
 }
 
 function renderMonthlyTable() {
-    var records = fetchDashboardData().monthly.slice();
+    var records = dashboardData.monthly.slice();
     records.sort(function (a, b) {
         return (b.year * 100 + b.month) - (a.year * 100 + a.month);
     });
@@ -654,15 +661,19 @@ function setupMonthlyEntry() {
     $('monthly-form').addEventListener('submit', handleMonthlySubmit);
     $('btn-clear-monthly').addEventListener('click', clearMonthlyForm);
 
-    $('monthly-body').addEventListener('click', function (event) {
+    $('monthly-body').addEventListener('click', async function (event) {
         var editId = event.target.getAttribute('data-edit-id');
         var deleteId = event.target.getAttribute('data-delete-id');
         if (editId) {
             startEditMonthly(editId);
         }
         if (deleteId && confirm('Delete this monthly record?')) {
-            deleteRecordFromBackend(deleteId);
-            refreshAll();
+            try {
+                await deleteRecordFromBackend(deleteId);
+                await refreshAll();
+            } catch (error) {
+                alert(error.message);
+            }
         }
     });
 }
@@ -719,7 +730,7 @@ function buildInventoryReportRows(data, keyword) {
 }
 
 function renderReport() {
-    var data = fetchDashboardData();
+    var data = dashboardData;
     var type = $('report-type').value;
     var year = Number($('report-year').value);
     var month = Number($('report-month').value);
@@ -819,5 +830,6 @@ setupNavigation();
 setupInventory();
 setupMonthlyEntry();
 setupReports();
-refreshAll();
-
+refreshAll().catch(function (error) {
+    console.error(error);
+});
